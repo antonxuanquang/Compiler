@@ -1,0 +1,155 @@
+options {
+	LOOKAHEAD = 2;
+}
+
+PARSER_BEGIN(Grammar)
+
+public class Grammar {
+	public static void main(String[] args) throws ParseException{
+		Grammar parser = new Grammar(System.in);
+		while (true) {
+			try {
+				parser.program();
+			} catch (ParseException e) {
+				throw e;
+			}
+		}
+	}
+}
+
+PARSER_END(Grammar)
+
+SKIP :
+{
+	" "
+	| "\r"
+	| "\t"
+	| "\n"
+	// | <"/*" (~[<EOF>])* "*/">
+}
+
+TOKEN: /* OPERATORS */
+{
+	<PLUS: "+">
+	| <MINUS: "-">
+	| <MULTIPLY: "*">
+	| <DIVIDE: "/">
+	| <MOD: "%">
+	| <UBANG: "!">
+	| <LESS_OP: "<">
+	| <MORE_OP: ">">
+}
+
+TOKEN: /* Reserved words*/
+{
+	<WHILE: "while">
+	| <IF: "if">
+	| <ELSE: "else">
+	| <BREAK: "break">
+	| <RETURN: "return">
+	| <CONTINUE: "continue">
+}
+
+TOKEN: /* Function names */
+{
+	<ID: (<LETTER> )+ (<INT>|<LETTER>)* >
+	| <#LETTER: ["a"-"z", "A"-"Z"]> 
+}
+
+TOKEN: /* numeric constants */
+{
+	<INT: (["0"-"9"])+>
+}
+
+TOKEN: /* special characters */
+{
+	<SEMICOLON: ";">
+	| <LPAREN: "(">
+	| <RPAREN: ")">
+	| <LBRACKET: "{">
+	| <RBRACKET: "}">
+	| <EQUAL: "=">
+}
+
+void program(): {} {
+	(statement())+ <EOF>
+}
+
+void statement(): {} {
+	compound_statement()
+	| <WHILE> test() statement()
+	| <IF> test() statement() [<ELSE> statement()]
+	| expression() <SEMICOLON>
+	| <BREAK> <SEMICOLON>
+	| <RETURN> expression() <SEMICOLON> 
+	| <CONTINUE> <SEMICOLON> 
+	| <SEMICOLON>
+}
+
+void compound_statement(): {} {
+	<LBRACKET> (statement())+ <RBRACKET>
+}
+
+void test(): {} {
+	<LPAREN> expression() <RPAREN>
+}
+
+void expression(): {} {
+	(<ID> "=" expression()) | condition()
+}
+
+void condition(): {} {
+	disjunction() ["?" expression() ":" condition()]
+}
+
+void disjunction(): {} {
+	conjunction() ("|" conjunction())*
+}
+
+void conjunction(): {} {
+	comparison() ("&" comparison())* 
+}
+
+void comparison(): {} {
+	relation() ["==" relation()]
+}
+
+void relation(): {} {
+	sum() [relation_operator() sum()]
+}
+
+void sum(): {} {
+	term() (add_operator() term())*
+}
+
+void term(): {} {
+	factor() (mul_operator() factor())*
+}
+
+void factor(): {} {
+	primary() | (unary_operator() primary())
+}
+
+void primary(): {} {
+	<ID> | <INT> | (<LPAREN> expression() <RPAREN>)
+}
+
+void relation_operator(): {} {
+	// <LESS_OP> | <MORE_OP>
+	"<" | ">" | ">=" | "<="
+}
+
+void mul_operator(): {} {
+	<MULTIPLY> | <DIVIDE> | <MOD>
+	// "*" | "/" | "%"
+}
+
+void add_operator(): {} {
+	<PLUS> | <MINUS>
+	// "+" | "-"
+}
+
+void unary_operator(): {} {
+	<MINUS> | <UBANG>
+	// "-" | "!"
+}
