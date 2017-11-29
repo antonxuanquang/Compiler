@@ -97,6 +97,37 @@ public class IIG {
 		symbol.setValue(model.getNextImmediateInstructionCounter());
 	}
 	
+	public static void ternary1(Model model) {
+		int nextInstructionCounter = model.getNextImmediateInstructionCounter();
+		Symbol left = model.getSymbolStack().pop();
+		model.generateImmediateInstruction("jeqz", left, null, new ConstantSymbol(-1));
+		model.getInstructionCounterStack().push(nextInstructionCounter);
+	}
+	
+	public static void ternary2(Model model) {
+		String tempId = generateRandomTemp();
+		VariableSymbol temp = new VariableSymbol(tempId);
+		model.getSymbolTable().put(tempId, temp);
+		model.generateImmediateInstruction("=", model.getSymbolStack().pop(), null, temp);
+		int nextInstructionCounter = model.getNextImmediateInstructionCounter();
+		model.generateImmediateInstruction("jump", null, null, new ConstantSymbol(-1));
+		int topCounter = model.getInstructionCounterStack().pop();
+		ConstantSymbol symbol = (ConstantSymbol) model.getImmediateInstructionList().get(topCounter).getResult();
+		symbol.setValue(model.getNextImmediateInstructionCounter());
+		model.getInstructionCounterStack().push(nextInstructionCounter);
+		model.getSymbolStack().push(temp);
+	}
+	
+	public static void ternary3(Model model) {
+		Symbol left = model.getSymbolStack().pop();
+		Symbol temp = model.getSymbolStack().pop();
+		model.generateImmediateInstruction("=", left, null, temp);
+		int topCounter = model.getInstructionCounterStack().pop();
+		ConstantSymbol symbol = (ConstantSymbol) model.getImmediateInstructionList().get(topCounter).getResult();
+		symbol.setValue(model.getNextImmediateInstructionCounter());
+		model.getSymbolStack().push(temp);
+	}
+	
 	public static void while1(Model model) {
 		model.getWhileStack().push(model.getNextImmediateInstructionCounter());
 	}

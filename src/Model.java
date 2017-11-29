@@ -66,12 +66,18 @@ public class Model {
 		
 		sb.append("**************Symbol Stack*****************\n");
 		for (Symbol symbol: symbolStack) {
-			sb.append(symbol);
+			sb.append(symbol + "\n");
 		}
 		sb.append("\n");
 		
 		sb.append("**************Counter Stack*****************\n");
 		for (Integer counter: instructionCounterStack) {
+			sb.append(counter + "\n");
+		}
+		sb.append("\n");
+		
+		sb.append("**************While Stack*****************\n");
+		for (Integer counter: whileStack) {
 			sb.append(counter + "\n");
 		}
 		sb.append("\n");

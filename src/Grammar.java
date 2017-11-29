@@ -112,12 +112,12 @@ public class Grammar implements GrammarConstants {
     disjunction();
     if (jj_2_14(2)) {
       jj_consume_token(28);
-                            IIG.if1(model);
+                            IIG.ternary1(model);
       expression();
+                                                                IIG.ternary2(model);
       jj_consume_token(29);
-                                                               IIG.if2(model);
       condition();
-                                                                                             IIG.if3(model);
+                                                                                                        IIG.ternary3(model);
     } else {
       ;
     }

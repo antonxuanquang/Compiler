@@ -102,7 +102,7 @@ void expression(): {Token x;} {
 }
 
 void condition(): {} {
-	disjunction() ["?" {IIG.if1(model);} expression() ":" {IIG.if2(model);} condition() {IIG.if3(model);}]
+	disjunction() ["?" {IIG.ternary1(model);} expression() {IIG.ternary2(model);} ":"  condition() {IIG.ternary3(model);}]
 }
 
 void disjunction(): {Token operator;} {
