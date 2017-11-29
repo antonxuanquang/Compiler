@@ -52,7 +52,8 @@ public class IIG {
 	}
 	
 	public static void pushID(Model model, Token token) {
-		VariableSymbol symbol = new VariableSymbol(token.image);
+		String id = token.image;
+		VariableSymbol symbol = model.getSymbolTable().getOrDefault(id, new VariableSymbol(id));
 		model.getSymbolStack().push(symbol);
 		model.getSymbolTable().put(token.image, symbol);
 	}
@@ -77,13 +78,13 @@ public class IIG {
 	public static void if1(Model model) {
 		int nextInstructionCounter = model.getNextImmediateInstructionCounter();
 		Symbol left = model.getSymbolStack().pop();
-		model.generateImmediateInstruction("jeqz", left, null, new ConstantSymbol(0));
+		model.generateImmediateInstruction("jeqz", left, null, new ConstantSymbol(-1));
 		model.getInstructionCounterStack().push(nextInstructionCounter);
 	}
 	
 	public static void if2(Model model) {
 		int nextInstructionCounter = model.getNextImmediateInstructionCounter();
-		model.generateImmediateInstruction("jump", null, null, new ConstantSymbol(0));
+		model.generateImmediateInstruction("jump", null, null, new ConstantSymbol(-1));
 		int topCounter = model.getInstructionCounterStack().pop();
 		ConstantSymbol symbol = (ConstantSymbol) model.getImmediateInstructionList().get(topCounter).getResult();
 		symbol.setValue(model.getNextImmediateInstructionCounter());
@@ -103,7 +104,7 @@ public class IIG {
 	public static void while2(Model model) {
 		Symbol left = model.getSymbolStack().pop();
 		model.getWhileStack().push(model.getNextImmediateInstructionCounter());
-		model.generateImmediateInstruction("jeqz", left, null, new ConstantSymbol(0));		
+		model.generateImmediateInstruction("jeqz", left, null, new ConstantSymbol(-1));		
 	}
 	
 	public static void while3(Model model) {
@@ -113,29 +114,33 @@ public class IIG {
 		backPatch(model, a, model.getNextImmediateInstructionCounter());
 	}
 	
-	public static void continueAction(Model model) throws Exception {
+	public static void breakAction(Model model) throws ParseException {
 		if (model.getWhileStack().isEmpty()) 
-			throw new Exception("Attempt to use break outside while loop");
+			throw new ParseException("Attempt to use continue outside while loop");
 		int a = model.getWhileStack().pop();
 		model.getWhileStack().push(model.getNextImmediateInstructionCounter());
 		model.generateImmediateInstruction("jump", null, null, new ConstantSymbol(a));
 	}
 	
-	public static void breakAction(Model model) throws Exception {
+	public static void continueAction(Model model) throws ParseException {
 		if (model.getWhileStack().isEmpty()) 
-			throw new Exception("Attempt to use break outside while loop");
+			throw new ParseException("Attempt to use break outside while loop");
 		int a = model.getWhileStack().pop();
 		if (model.getWhileStack().isEmpty()) 
-			throw new Exception("Attempt to use break outside while loop");
+			throw new ParseException("Attempt to use break outside while loop");
 		int b = model.getWhileStack().pop();
 		model.getWhileStack().push(b);
 		model.getWhileStack().push(a);
 		model.generateImmediateInstruction("jump", null, null, new ConstantSymbol(b));
 	}
 	
-	private static void backPatch(Model model, int a, int nextImmediateInstructionCounter) {
-		// TODO Auto-generated method stub
-		
+	private static void backPatch(Model model, int index, int nextImmediateInstructionCounter) {
+		int nextCounter = index;
+		while (nextCounter != -1) {
+			ImmediateInstruction instruction =  model.getImmediateInstructionList().get(nextCounter);
+			ConstantSymbol symbol = (ConstantSymbol) instruction.getResult();
+			nextCounter = symbol.getValue();
+			symbol.setValue(nextImmediateInstructionCounter);
+		}
 	}
-
 }

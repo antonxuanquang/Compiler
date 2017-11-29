@@ -31,8 +31,11 @@ public class Grammar implements GrammarConstants {
       compound_statement();
     } else if (jj_2_4(2)) {
       jj_consume_token(WHILE);
+                   IIG.while1(model);
       test();
+                                               IIG.while2(model);
       statement();
+                                                                                IIG.while3(model);
     } else if (jj_2_5(2)) {
       jj_consume_token(IF);
       test();
@@ -52,6 +55,7 @@ public class Grammar implements GrammarConstants {
     } else if (jj_2_7(2)) {
       jj_consume_token(BREAK);
       jj_consume_token(SEMICOLON);
+                               IIG.breakAction(model);
     } else if (jj_2_8(2)) {
       jj_consume_token(RETURN);
       expression();
@@ -59,6 +63,7 @@ public class Grammar implements GrammarConstants {
     } else if (jj_2_9(2)) {
       jj_consume_token(CONTINUE);
       jj_consume_token(SEMICOLON);
+                                  IIG.continueAction(model);
     } else if (jj_2_10(2)) {
       jj_consume_token(SEMICOLON);
     } else {
@@ -107,9 +112,12 @@ public class Grammar implements GrammarConstants {
     disjunction();
     if (jj_2_14(2)) {
       jj_consume_token(28);
+                            IIG.if1(model);
       expression();
       jj_consume_token(29);
+                                                               IIG.if2(model);
       condition();
+                                                                                             IIG.if3(model);
     } else {
       ;
     }
