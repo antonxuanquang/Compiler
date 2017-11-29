@@ -5,14 +5,16 @@ options {
 PARSER_BEGIN(Grammar)
 
 public class Grammar {
+
+	static Model model = new Model();
+
 	public static void main(String[] args) throws ParseException{
 		Grammar parser = new Grammar(System.in);
-		while (true) {
-			try {
-				parser.program();
-			} catch (ParseException e) {
-				throw e;
-			}
+		
+		try {
+			parser.program();
+		} catch (ParseException e) {
+			throw e;
 		}
 	}
 }
@@ -78,7 +80,7 @@ void program(): {} {
 void statement(): {} {
 	compound_statement()
 	| <WHILE> test() statement()
-	| <IF> test() statement() [<ELSE> statement()]
+	| <IF> test() {IIG.if1(model);} statement() [<ELSE> {IIG.if2(model);} statement()] {IIG.if3(model);}
 	| expression() <SEMICOLON>
 	| <BREAK> <SEMICOLON>
 	| <RETURN> expression() <SEMICOLON> 
@@ -87,15 +89,16 @@ void statement(): {} {
 }
 
 void compound_statement(): {} {
-	<LBRACKET> (statement())+ <RBRACKET>
+	<LBRACKET> (statement())* <RBRACKET>
 }
 
 void test(): {} {
 	<LPAREN> expression() <RPAREN>
 }
 
-void expression(): {} {
-	(<ID> "=" expression()) | condition()
+void expression(): {Token x;} {
+	(x = <ID> {IIG.expression1(model, x);} "=" expression() {IIG.expression2(model);})
+	| condition()
 }
 
 void condition(): {} {
@@ -118,38 +121,44 @@ void relation(): {} {
 	sum() [relation_operator() sum()]
 }
 
-void sum(): {} {
-	term() (add_operator() term())*
+void sum(): {String operator;} {
+	term() (operator = add_operator() term() {IIG.add(model, operator);})*
 }
 
-void term(): {} {
-	factor() (mul_operator() factor())*
+void term(): {String operator;} {
+	factor() (operator = mul_operator() factor() {IIG.multiply(model, operator);})*
 }
 
 void factor(): {} {
 	primary() | (unary_operator() primary())
 }
 
-void primary(): {} {
-	<ID> | <INT> | (<LPAREN> expression() <RPAREN>)
+void primary(): {Token x;} {
+	x = <ID> {IIG.pushID(model, x);}
+	| x = <INT> {IIG.pushInt(model, x);}
+	| (<LPAREN> expression() <RPAREN>)
 }
 
-void relation_operator(): {} {
-	// <LESS_OP> | <MORE_OP>
-	"<" | ">" | ">=" | "<="
+String relation_operator(): {Token x;} {
+	x = "<" {return x.image;}
+	| x = ">" {return x.image;}
+	| x = ">=" {return x.image;}
+	| x = "<=" {return x.image;}
 }
 
-void mul_operator(): {} {
-	<MULTIPLY> | <DIVIDE> | <MOD>
-	// "*" | "/" | "%"
+String mul_operator(): {Token x;} {
+	x = <MULTIPLY> {return x.image;}
+	| x = <DIVIDE> {return x.image;}
+	| x = <MOD> {return x.image;}
 }
 
-void add_operator(): {} {
-	<PLUS> | <MINUS>
+String add_operator(): {Token x;} {
+	x = <PLUS> {return x.image;}
+	| x = <MINUS> {return x.image;}
 	// "+" | "-"
 }
 
-void unary_operator(): {} {
-	<MINUS> | <UBANG>
-	// "-" | "!"
+String unary_operator(): {Token x;} {
+	x = <MINUS> {return x.image;}
+	| x = <UBANG> {return x.image;}	
 }
