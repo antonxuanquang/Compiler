@@ -130,7 +130,7 @@ void term(): {String operator;} {
 }
 
 void factor(): {String operator;} {
-	primary() | (operator = unary_operator() primary())
+	primary() | (operator = unary_operator() primary() {IIG.unary(model, operator);})
 }
 
 void primary(): {Token x;} {
@@ -159,6 +159,6 @@ String add_operator(): {Token x;} {
 }
 
 String unary_operator(): {Token x;} {
-	x = <MINUS> {return x.image;}
+	x = <MINUS> {return "neg";}
 	| x = <UBANG> {return x.image;}	
 }

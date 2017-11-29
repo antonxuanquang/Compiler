@@ -16,25 +16,14 @@ public class IIG {
         return saltStr;
 	}
 	
-//	public static void add(Model model, String operator) {
-//		Symbol right = model.getSymbolStack().pop();
-//		Symbol left = model.getSymbolStack().pop();
-//		String tempId = generateRandomTemp();
-//		VariableSymbol temp = new VariableSymbol(tempId);
-//		model.getSymbolTable().put(tempId, temp);
-//		model.generateImmediateInstruction(operator, left, right, temp);
-//		model.getSymbolStack().push(temp);
-//	}
-//	
-//	public static void multiply(Model model, String operator) {
-//		Symbol right = model.getSymbolStack().pop();
-//		Symbol left = model.getSymbolStack().pop();
-//		String tempId = generateRandomTemp();
-//		VariableSymbol temp = new VariableSymbol(tempId);
-//		model.getSymbolTable().put(tempId, temp);
-//		model.generateImmediateInstruction(operator, left, right, temp);
-//		model.getSymbolStack().push(temp);
-//	}
+	public static void unary(Model model, String operator) {
+		Symbol left = model.getSymbolStack().pop();
+		String tempId = generateRandomTemp();
+		VariableSymbol temp = new VariableSymbol(tempId);
+		model.getSymbolTable().put(tempId, temp);
+		model.generateImmediateInstruction(operator, left, null, temp);
+		model.getSymbolStack().push(temp);
+	}
 	
 	public static void binary(Model model, String operator) {
 		Symbol right = model.getSymbolStack().pop();
@@ -49,6 +38,37 @@ public class IIG {
 	public static void binary(Model model, Token token) {
 		String operator = token.image;
 		binary(model, operator);
+	}
+	
+	public static void ternary1(Model model) {
+		int nextInstructionCounter = model.getNextImmediateInstructionCounter();
+		Symbol left = model.getSymbolStack().pop();
+		model.generateImmediateInstruction("jeqz", left, null, new ConstantSymbol(-1));
+		model.getInstructionCounterStack().push(nextInstructionCounter);
+	}
+	
+	public static void ternary2(Model model) {
+		String tempId = generateRandomTemp();
+		VariableSymbol temp = new VariableSymbol(tempId);
+		model.getSymbolTable().put(tempId, temp);
+		model.generateImmediateInstruction("=", model.getSymbolStack().pop(), null, temp);
+		int nextInstructionCounter = model.getNextImmediateInstructionCounter();
+		model.generateImmediateInstruction("jump", null, null, new ConstantSymbol(-1));
+		int topCounter = model.getInstructionCounterStack().pop();
+		ConstantSymbol symbol = (ConstantSymbol) model.getImmediateInstructionList().get(topCounter).getResult();
+		symbol.setValue(model.getNextImmediateInstructionCounter());
+		model.getInstructionCounterStack().push(nextInstructionCounter);
+		model.getSymbolStack().push(temp);
+	}
+	
+	public static void ternary3(Model model) {
+		Symbol left = model.getSymbolStack().pop();
+		Symbol temp = model.getSymbolStack().pop();
+		model.generateImmediateInstruction("=", left, null, temp);
+		int topCounter = model.getInstructionCounterStack().pop();
+		ConstantSymbol symbol = (ConstantSymbol) model.getImmediateInstructionList().get(topCounter).getResult();
+		symbol.setValue(model.getNextImmediateInstructionCounter());
+		model.getSymbolStack().push(temp);
 	}
 	
 	public static void pushID(Model model, Token token) {
@@ -95,37 +115,6 @@ public class IIG {
 		int topCounter = model.getInstructionCounterStack().pop();
 		ConstantSymbol symbol = (ConstantSymbol) model.getImmediateInstructionList().get(topCounter).getResult();
 		symbol.setValue(model.getNextImmediateInstructionCounter());
-	}
-	
-	public static void ternary1(Model model) {
-		int nextInstructionCounter = model.getNextImmediateInstructionCounter();
-		Symbol left = model.getSymbolStack().pop();
-		model.generateImmediateInstruction("jeqz", left, null, new ConstantSymbol(-1));
-		model.getInstructionCounterStack().push(nextInstructionCounter);
-	}
-	
-	public static void ternary2(Model model) {
-		String tempId = generateRandomTemp();
-		VariableSymbol temp = new VariableSymbol(tempId);
-		model.getSymbolTable().put(tempId, temp);
-		model.generateImmediateInstruction("=", model.getSymbolStack().pop(), null, temp);
-		int nextInstructionCounter = model.getNextImmediateInstructionCounter();
-		model.generateImmediateInstruction("jump", null, null, new ConstantSymbol(-1));
-		int topCounter = model.getInstructionCounterStack().pop();
-		ConstantSymbol symbol = (ConstantSymbol) model.getImmediateInstructionList().get(topCounter).getResult();
-		symbol.setValue(model.getNextImmediateInstructionCounter());
-		model.getInstructionCounterStack().push(nextInstructionCounter);
-		model.getSymbolStack().push(temp);
-	}
-	
-	public static void ternary3(Model model) {
-		Symbol left = model.getSymbolStack().pop();
-		Symbol temp = model.getSymbolStack().pop();
-		model.generateImmediateInstruction("=", left, null, temp);
-		int topCounter = model.getInstructionCounterStack().pop();
-		ConstantSymbol symbol = (ConstantSymbol) model.getImmediateInstructionList().get(topCounter).getResult();
-		symbol.setValue(model.getNextImmediateInstructionCounter());
-		model.getSymbolStack().push(temp);
 	}
 	
 	public static void while1(Model model) {

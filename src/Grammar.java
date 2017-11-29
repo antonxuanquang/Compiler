@@ -218,6 +218,7 @@ public class Grammar implements GrammarConstants {
     } else if (jj_2_22(2)) {
       operator = unary_operator();
       primary();
+                                                            IIG.unary(model, operator);
     } else {
       jj_consume_token(-1);
       throw new ParseException();
@@ -300,7 +301,7 @@ public class Grammar implements GrammarConstants {
                           Token x;
     if (jj_2_35(2)) {
       x = jj_consume_token(MINUS);
-                     {if (true) return x.image;}
+                     {if (true) return "neg";}
     } else if (jj_2_36(2)) {
       x = jj_consume_token(UBANG);
                        {if (true) return x.image;}
