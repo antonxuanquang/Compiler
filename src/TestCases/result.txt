@@ -1,0 +1,44 @@
+**************Immediate Instruction*****************
+**************Symbol Table*****************
+b: VariableSymbol(id = 'b', nextUse = 0, memLoc = 'null')
+c: VariableSymbol(id = 'c', nextUse = 0, memLoc = 'null')
+d: VariableSymbol(id = 'd', nextUse = 0, memLoc = 'null')
+
+**************Symbol Stack*****************
+VariableSymbol(id = 'd', nextUse = 0, memLoc = 'null')
+VariableSymbol(id = 'b', nextUse = 0, memLoc = 'null')
+VariableSymbol(id = 'c', nextUse = 0, memLoc = 'null')
+ConstantSymbol(5)
+
+**************Counter Stack*****************
+
+**************While Stack*****************
+
+
+**************Immediate Instruction*****************
+0/ operator: =
+	op1: ConstantSymbol(5)
+	op2: null
+	result: VariableSymbol(id = 'c', nextUse = 0, memLoc = 'null')
+	startAdd: 0
+
+1/ operator: +
+	op1: VariableSymbol(id = 'd', nextUse = 0, memLoc = 'null')
+	op2: VariableSymbol(id = 'b', nextUse = 0, memLoc = 'null')
+	result: VariableSymbol(id = 'T334MU', nextUse = 0, memLoc = 'null')
+	startAdd: 0
+
+**************Symbol Table*****************
+b: VariableSymbol(id = 'b', nextUse = 0, memLoc = 'null')
+c: VariableSymbol(id = 'c', nextUse = 0, memLoc = 'null')
+d: VariableSymbol(id = 'd', nextUse = 0, memLoc = 'null')
+T334MU: VariableSymbol(id = 'T334MU', nextUse = 0, memLoc = 'null')
+
+**************Symbol Stack*****************
+VariableSymbol(id = 'T334MU', nextUse = 0, memLoc = 'null')
+
+**************Counter Stack*****************
+
+**************While Stack*****************
+
+

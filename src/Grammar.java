@@ -16,12 +16,12 @@ public class Grammar implements GrammarConstants {
   static final public void program() throws ParseException {
     label_1:
     while (true) {
-      statement();
       if (jj_2_1(2)) {
         ;
       } else {
         break label_1;
       }
+      statement();
     }
     jj_consume_token(0);
   }
@@ -111,11 +111,11 @@ public class Grammar implements GrammarConstants {
   static final public void condition() throws ParseException {
     disjunction();
     if (jj_2_14(2)) {
-      jj_consume_token(28);
+      jj_consume_token(34);
                             IIG.ternary1(model);
       expression();
                                                                 IIG.ternary2(model);
-      jj_consume_token(29);
+      jj_consume_token(35);
       condition();
                                                                                                         IIG.ternary3(model);
     } else {
@@ -133,7 +133,7 @@ public class Grammar implements GrammarConstants {
       } else {
         break label_3;
       }
-      operator = jj_consume_token(30);
+      operator = jj_consume_token(36);
       conjunction();
                                                      IIG.binary(model, operator);
     }
@@ -149,7 +149,7 @@ public class Grammar implements GrammarConstants {
       } else {
         break label_4;
       }
-      operator = jj_consume_token(31);
+      operator = jj_consume_token(37);
       comparison();
                                                    IIG.binary(model, operator);
     }
@@ -159,7 +159,7 @@ public class Grammar implements GrammarConstants {
                     Token operator;
     relation();
     if (jj_2_17(2)) {
-      operator = jj_consume_token(32);
+      operator = jj_consume_token(38);
       relation();
                                                 IIG.binary(model, operator);
     } else {
@@ -252,10 +252,10 @@ public class Grammar implements GrammarConstants {
       x = jj_consume_token(MORE_OP);
                    {if (true) return x.image;}
     } else if (jj_2_28(2)) {
-      x = jj_consume_token(33);
+      x = jj_consume_token(39);
                     {if (true) return x.image;}
     } else if (jj_2_29(2)) {
-      x = jj_consume_token(34);
+      x = jj_consume_token(40);
                     {if (true) return x.image;}
     } else {
       jj_consume_token(-1);
@@ -564,106 +564,6 @@ public class Grammar implements GrammarConstants {
     finally { jj_save(35, xla); }
   }
 
-  static private boolean jj_3_5() {
-    if (jj_scan_token(IF)) return true;
-    if (jj_3R_9()) return true;
-    return false;
-  }
-
-  static private boolean jj_3_4() {
-    if (jj_scan_token(WHILE)) return true;
-    if (jj_3R_9()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_7() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_3()) {
-    jj_scanpos = xsp;
-    if (jj_3_4()) {
-    jj_scanpos = xsp;
-    if (jj_3_5()) {
-    jj_scanpos = xsp;
-    if (jj_3_6()) {
-    jj_scanpos = xsp;
-    if (jj_3_7()) {
-    jj_scanpos = xsp;
-    if (jj_3_8()) {
-    jj_scanpos = xsp;
-    if (jj_3_9()) {
-    jj_scanpos = xsp;
-    if (jj_3_10()) return true;
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  static private boolean jj_3_3() {
-    if (jj_3R_8()) return true;
-    return false;
-  }
-
-  static private boolean jj_3_1() {
-    if (jj_3R_7()) return true;
-    return false;
-  }
-
-  static private boolean jj_3_36() {
-    if (jj_scan_token(UBANG)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_22() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_35()) {
-    jj_scanpos = xsp;
-    if (jj_3_36()) return true;
-    }
-    return false;
-  }
-
-  static private boolean jj_3_35() {
-    if (jj_scan_token(MINUS)) return true;
-    return false;
-  }
-
-  static private boolean jj_3_34() {
-    if (jj_scan_token(MINUS)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_17() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_33()) {
-    jj_scanpos = xsp;
-    if (jj_3_34()) return true;
-    }
-    return false;
-  }
-
-  static private boolean jj_3_33() {
-    if (jj_scan_token(PLUS)) return true;
-    return false;
-  }
-
-  static private boolean jj_3_32() {
-    if (jj_scan_token(MOD)) return true;
-    return false;
-  }
-
-  static private boolean jj_3_31() {
-    if (jj_scan_token(DIVIDE)) return true;
-    return false;
-  }
-
   static private boolean jj_3R_19() {
     Token xsp;
     xsp = jj_scanpos;
@@ -683,12 +583,12 @@ public class Grammar implements GrammarConstants {
   }
 
   static private boolean jj_3_29() {
-    if (jj_scan_token(34)) return true;
+    if (jj_scan_token(40)) return true;
     return false;
   }
 
   static private boolean jj_3_28() {
-    if (jj_scan_token(33)) return true;
+    if (jj_scan_token(39)) return true;
     return false;
   }
 
@@ -791,7 +691,7 @@ public class Grammar implements GrammarConstants {
   }
 
   static private boolean jj_3_17() {
-    if (jj_scan_token(32)) return true;
+    if (jj_scan_token(38)) return true;
     if (jj_3R_14()) return true;
     return false;
   }
@@ -809,7 +709,7 @@ public class Grammar implements GrammarConstants {
   }
 
   static private boolean jj_3_16() {
-    if (jj_scan_token(31)) return true;
+    if (jj_scan_token(37)) return true;
     if (jj_3R_13()) return true;
     return false;
   }
@@ -825,7 +725,7 @@ public class Grammar implements GrammarConstants {
   }
 
   static private boolean jj_3_15() {
-    if (jj_scan_token(30)) return true;
+    if (jj_scan_token(36)) return true;
     if (jj_3R_12()) return true;
     return false;
   }
@@ -839,7 +739,7 @@ public class Grammar implements GrammarConstants {
   }
 
   static private boolean jj_3_14() {
-    if (jj_scan_token(28)) return true;
+    if (jj_scan_token(34)) return true;
     if (jj_3R_10()) return true;
     return false;
   }
@@ -948,6 +848,106 @@ public class Grammar implements GrammarConstants {
   static private boolean jj_3_6() {
     if (jj_3R_10()) return true;
     if (jj_scan_token(SEMICOLON)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_5() {
+    if (jj_scan_token(IF)) return true;
+    if (jj_3R_9()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_4() {
+    if (jj_scan_token(WHILE)) return true;
+    if (jj_3R_9()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_7() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_3()) {
+    jj_scanpos = xsp;
+    if (jj_3_4()) {
+    jj_scanpos = xsp;
+    if (jj_3_5()) {
+    jj_scanpos = xsp;
+    if (jj_3_6()) {
+    jj_scanpos = xsp;
+    if (jj_3_7()) {
+    jj_scanpos = xsp;
+    if (jj_3_8()) {
+    jj_scanpos = xsp;
+    if (jj_3_9()) {
+    jj_scanpos = xsp;
+    if (jj_3_10()) return true;
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  static private boolean jj_3_3() {
+    if (jj_3R_8()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_1() {
+    if (jj_3R_7()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_36() {
+    if (jj_scan_token(UBANG)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_22() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_35()) {
+    jj_scanpos = xsp;
+    if (jj_3_36()) return true;
+    }
+    return false;
+  }
+
+  static private boolean jj_3_35() {
+    if (jj_scan_token(MINUS)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_34() {
+    if (jj_scan_token(MINUS)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_17() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_33()) {
+    jj_scanpos = xsp;
+    if (jj_3_34()) return true;
+    }
+    return false;
+  }
+
+  static private boolean jj_3_33() {
+    if (jj_scan_token(PLUS)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_32() {
+    if (jj_scan_token(MOD)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_31() {
+    if (jj_scan_token(DIVIDE)) return true;
     return false;
   }
 
@@ -1184,7 +1184,7 @@ public class Grammar implements GrammarConstants {
   /** Generate ParseException. */
   static public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[35];
+    boolean[] la1tokens = new boolean[41];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -1201,7 +1201,7 @@ public class Grammar implements GrammarConstants {
         }
       }
     }
-    for (int i = 0; i < 35; i++) {
+    for (int i = 0; i < 41; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

@@ -90,6 +90,7 @@ public class IIG {
 	}
 	
 	public static void expression2(Model model) {
+//		System.out.println(model);
 		Symbol leftOp = model.getSymbolStack().pop();
 		Symbol result = model.getSymbolStack().pop();
 		model.generateImmediateInstruction("=", leftOp, null, result);

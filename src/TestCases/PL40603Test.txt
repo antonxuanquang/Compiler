@@ -6,7 +6,7 @@ b = a      + b/c% 3*d -13;
 
 c = a & !15 * b | -77;
 
-d = b+(c=5);
+d = b+(c=5); //
 
 d = b+(c==5);
 
@@ -18,13 +18,13 @@ if (b<0) c=5; else c=1;
 
 if (c==13) ; else {a=1; b=2; d=-13;}
 
- if (a=1) if (b>=2) if(c<=-12) b=5;else b=-2; else b=0;
+ if (a=1) if (b>=2) if(c<=-12) b=5;else b=-2; else b=0; //
 
 if
 
 	(b=3)
 
-			a=b+c;
+			a=b+c; //
 
 else if (A>2) a
 
