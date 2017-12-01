@@ -17,7 +17,7 @@ if (b<0) c=5; else c=1;
 if (c==13) ; else {a=1; b=2; d=-13;}
 
 while /* comment here
-in a new line */ (a>b) {
+in a new */ (a>b) {
 
 	c=d*e;
 

@@ -21,7 +21,7 @@ public class IIG {
 		String tempId = generateRandomTemp();
 		VariableSymbol temp = new VariableSymbol(tempId);
 		model.getSymbolTable().put(tempId, temp);
-		model.generateImmediateInstruction(operator, left, null, temp);
+		model.generateImmediateInstruction(operator, left.getId(), "", temp.getId());
 		model.getSymbolStack().push(temp);
 	}
 	
@@ -31,7 +31,7 @@ public class IIG {
 		String tempId = generateRandomTemp();
 		VariableSymbol temp = new VariableSymbol(tempId);
 		model.getSymbolTable().put(tempId, temp);
-		model.generateImmediateInstruction(operator, left, right, temp);
+		model.generateImmediateInstruction(operator, left.getId(), right.getId(), temp.getId());
 		model.getSymbolStack().push(temp);
 	}
 	
@@ -43,7 +43,7 @@ public class IIG {
 	public static void ternary1(Model model) {
 		int nextInstructionCounter = model.getNextImmediateInstructionCounter();
 		Symbol left = model.getSymbolStack().pop();
-		model.generateImmediateInstruction("jeqz", left, null, new ConstantSymbol(-1));
+		model.generateImmediateInstruction("jeqz", left.getId(), "", "-1");
 		model.getInstructionCounterStack().push(nextInstructionCounter);
 	}
 	
@@ -51,12 +51,12 @@ public class IIG {
 		String tempId = generateRandomTemp();
 		VariableSymbol temp = new VariableSymbol(tempId);
 		model.getSymbolTable().put(tempId, temp);
-		model.generateImmediateInstruction("=", model.getSymbolStack().pop(), null, temp);
+		model.generateImmediateInstruction("=", model.getSymbolStack().pop().getId(), "", temp.getId());
 		int nextInstructionCounter = model.getNextImmediateInstructionCounter();
-		model.generateImmediateInstruction("jump", null, null, new ConstantSymbol(-1));
+		model.generateImmediateInstruction("jump", "", "", "-1");
 		int topCounter = model.getInstructionCounterStack().pop();
-		ConstantSymbol symbol = (ConstantSymbol) model.getImmediateInstructionList().get(topCounter).getResult();
-		symbol.setValue(model.getNextImmediateInstructionCounter());
+		model.getImmediateInstructionList().get(topCounter)
+			.setResult("" + model.getNextImmediateInstructionCounter());
 		model.getInstructionCounterStack().push(nextInstructionCounter);
 		model.getSymbolStack().push(temp);
 	}
@@ -64,10 +64,10 @@ public class IIG {
 	public static void ternary3(Model model) {
 		Symbol left = model.getSymbolStack().pop();
 		Symbol temp = model.getSymbolStack().pop();
-		model.generateImmediateInstruction("=", left, null, temp);
+		model.generateImmediateInstruction("=", left.getId(), "", temp.getId());
 		int topCounter = model.getInstructionCounterStack().pop();
-		ConstantSymbol symbol = (ConstantSymbol) model.getImmediateInstructionList().get(topCounter).getResult();
-		symbol.setValue(model.getNextImmediateInstructionCounter());
+		model.getImmediateInstructionList().get(topCounter)
+			.setResult("" + model.getNextImmediateInstructionCounter());
 		model.getSymbolStack().push(temp);
 	}
 	
@@ -79,7 +79,7 @@ public class IIG {
 	}
 	
 	public static void pushInt(Model model, Token token) {
-		model.getSymbolStack().push(new ConstantSymbol(Integer.parseInt(token.image)));
+		model.getSymbolStack().push(new ConstantSymbol(token.image));
 	}
 	
 	public static void expression1(Model model, Token token) {
@@ -93,29 +93,29 @@ public class IIG {
 //		System.out.println(model);
 		Symbol leftOp = model.getSymbolStack().pop();
 		Symbol result = model.getSymbolStack().pop();
-		model.generateImmediateInstruction("=", leftOp, null, result);
+		model.generateImmediateInstruction("=", leftOp.getId(), "", result.getId());
 	}
 	
 	public static void if1(Model model) {
 		int nextInstructionCounter = model.getNextImmediateInstructionCounter();
 		Symbol left = model.getSymbolStack().pop();
-		model.generateImmediateInstruction("jeqz", left, null, new ConstantSymbol(-1));
+		model.generateImmediateInstruction("jeqz", left.getId(), "", "-1");
 		model.getInstructionCounterStack().push(nextInstructionCounter);
 	}
 	
 	public static void if2(Model model) {
 		int nextInstructionCounter = model.getNextImmediateInstructionCounter();
-		model.generateImmediateInstruction("jump", null, null, new ConstantSymbol(-1));
+		model.generateImmediateInstruction("jump", "", "", "-1");
 		int topCounter = model.getInstructionCounterStack().pop();
-		ConstantSymbol symbol = (ConstantSymbol) model.getImmediateInstructionList().get(topCounter).getResult();
-		symbol.setValue(model.getNextImmediateInstructionCounter());
+		model.getImmediateInstructionList().get(topCounter)
+			.setResult("" + model.getNextImmediateInstructionCounter());
 		model.getInstructionCounterStack().push(nextInstructionCounter);
 	}
 	
 	public static void if3(Model model) {
 		int topCounter = model.getInstructionCounterStack().pop();
-		ConstantSymbol symbol = (ConstantSymbol) model.getImmediateInstructionList().get(topCounter).getResult();
-		symbol.setValue(model.getNextImmediateInstructionCounter());
+		model.getImmediateInstructionList().get(topCounter)
+			.setResult("" + model.getNextImmediateInstructionCounter());
 	}
 	
 	public static void while1(Model model) {
@@ -125,13 +125,13 @@ public class IIG {
 	public static void while2(Model model) {
 		Symbol left = model.getSymbolStack().pop();
 		model.getWhileStack().push(model.getNextImmediateInstructionCounter());
-		model.generateImmediateInstruction("jeqz", left, null, new ConstantSymbol(-1));		
+		model.generateImmediateInstruction("jeqz", left.getId(), "", "-1");		
 	}
 	
 	public static void while3(Model model) {
 		int a = model.getWhileStack().pop();
 		int b = model.getWhileStack().pop();
-		model.generateImmediateInstruction("jump", null, null, new ConstantSymbol(b));
+		model.generateImmediateInstruction("jump", "", "", "" + b);
 		backPatch(model, a, model.getNextImmediateInstructionCounter());
 	}
 	
@@ -140,7 +140,7 @@ public class IIG {
 			throw new ParseException("Attempt to use continue outside while loop");
 		int a = model.getWhileStack().pop();
 		model.getWhileStack().push(model.getNextImmediateInstructionCounter());
-		model.generateImmediateInstruction("jump", null, null, new ConstantSymbol(a));
+		model.generateImmediateInstruction("jump", "", "", "" + a);
 	}
 	
 	public static void continueAction(Model model) throws ParseException {
@@ -152,16 +152,16 @@ public class IIG {
 		int b = model.getWhileStack().pop();
 		model.getWhileStack().push(b);
 		model.getWhileStack().push(a);
-		model.generateImmediateInstruction("jump", null, null, new ConstantSymbol(b));
+		model.generateImmediateInstruction("jump", "", "", "" + b);
 	}
 	
 	private static void backPatch(Model model, int index, int nextImmediateInstructionCounter) {
 		int nextCounter = index;
 		while (nextCounter != -1) {
 			ImmediateInstruction instruction =  model.getImmediateInstructionList().get(nextCounter);
-			ConstantSymbol symbol = (ConstantSymbol) instruction.getResult();
-			nextCounter = symbol.getValue();
-			symbol.setValue(nextImmediateInstructionCounter);
+			nextCounter = Integer.parseInt(instruction.getResult());
+			instruction.setResult("" + nextImmediateInstructionCounter);
+			
 		}
 	}
 }

@@ -45,9 +45,9 @@ public class Model {
 	}
 	
 	public void generateImmediateInstruction(
-			String operator, Symbol op1, Symbol op2, Symbol result) {
+			String operator, String left, String right, String result) {
 		ImmediateInstruction instruction = new ImmediateInstruction(
-				operator, op1, op2, result);
+				operator, left, right, result);
 		immediateInstructionList.add(instruction);
 	}
 	
@@ -57,6 +57,7 @@ public class Model {
 		for(int i = 0; i < immediateInstructionList.size(); i++) {
 			sb.append(i + "/ " + immediateInstructionList.get(i));
 		}
+		sb.append("\n");
 		
 		sb.append("**************Symbol Table*****************\n");
 		for (String key: symbolTable.keySet()) {

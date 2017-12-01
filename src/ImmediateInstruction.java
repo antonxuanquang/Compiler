@@ -1,17 +1,24 @@
 
 public class ImmediateInstruction {
 	private String operator;
-	private Symbol op1;
-	private Symbol op2;
-	private Symbol result;
+//	private Symbol op1;
+//	private Symbol op2;
+//	private Symbol result;
+	private String left;
+	private int leftNextUse;
+	private String right;
+	private int rightNextUse;
+	private String result;
+	private int resultNextUse;
 	private int startAddr;
 	
-	public ImmediateInstruction(String operator, Symbol op1, Symbol op2, Symbol result) {
+	public ImmediateInstruction(String operator, String left, String right, String result) {
 		this.operator = operator;
-		this.op1 = op1;
-		this.op2 = op2;
+		this.left = left;
+		this.right = right;
 		this.result = result;
 		this.startAddr = 0;
+		this.leftNextUse = this.rightNextUse = this.resultNextUse = -1;
 	}
 	
 	public String getOperator() {
@@ -21,29 +28,53 @@ public class ImmediateInstruction {
 	public void setOperator(String operator) {
 		this.operator = operator;
 	}
-
-	public Symbol getOp1() {
-		return op1;
+	
+	public String getLeft() {
+		return left;
 	}
 
-	public void setOp1(Symbol op1) {
-		this.op1 = op1;
+	public void setLeft(String left) {
+		this.left = left;
 	}
 
-	public Symbol getOp2() {
-		return op2;
+	public int getLeftNextUse() {
+		return leftNextUse;
 	}
 
-	public void setOp2(Symbol op2) {
-		this.op2 = op2;
+	public void setLeftNextUse(int leftNextUse) {
+		this.leftNextUse = leftNextUse;
 	}
 
-	public Symbol getResult() {
+	public String getRight() {
+		return right;
+	}
+
+	public void setRight(String right) {
+		this.right = right;
+	}
+
+	public int getRightNextUse() {
+		return rightNextUse;
+	}
+
+	public void setRightNextUse(int rightNextUse) {
+		this.rightNextUse = rightNextUse;
+	}
+
+	public String getResult() {
 		return result;
 	}
 
-	public void setResult(Symbol result) {
+	public void setResult(String result) {
 		this.result = result;
+	}
+
+	public int getResultNextUse() {
+		return resultNextUse;
+	}
+
+	public void setResultNextUse(int resultNextUse) {
+		this.resultNextUse = resultNextUse;
 	}
 
 	public int getStartAddr() {
@@ -55,10 +86,7 @@ public class ImmediateInstruction {
 	}
 	
 	public String toString() {
-		return String.format("operator: %s\n\t"
-				+ "op1: %s\n\t"
-				+ "op2: %s\n\t"
-				+ "result: %s\n\t"
-				+ "startAdd: %d\n\n", operator, op1, op2, result, startAddr);
+		return String.format("%s | %s @ %d | %s @ %d | %s @ %d | %d\n", operator, left, 
+				leftNextUse, right, rightNextUse, result, resultNextUse, startAddr);
 	}
 }

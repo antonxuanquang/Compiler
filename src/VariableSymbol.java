@@ -1,6 +1,5 @@
 
 public class VariableSymbol extends Symbol{
-	private String id;
 	private int nextUse;
 	
 	// this isn't data stype isn't the best for
@@ -8,15 +7,7 @@ public class VariableSymbol extends Symbol{
 	private String memLoc;
 	
 	public VariableSymbol(String id) {
-		this.id = id;
-	}
-	
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
+		super(id);
 	}
 
 	public int getNextUse() {
