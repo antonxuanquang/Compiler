@@ -94,6 +94,15 @@ public class IIG {
 		Symbol leftOp = model.getSymbolStack().pop();
 		Symbol result = model.getSymbolStack().pop();
 		model.generateImmediateInstruction("=", leftOp.getId(), "", result.getId());
+		model.getSymbolStack().push(result);
+	}
+	
+	public static void reverseExpression(Model model) {
+		model.getSymbolStack().pop();
+	}
+	
+	public static void returnStatement(Model model) {
+		model.generateImmediateInstruction("rjs", "", "", "");
 	}
 	
 	public static void if1(Model model) {

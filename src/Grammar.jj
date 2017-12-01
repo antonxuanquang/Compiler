@@ -119,9 +119,9 @@ void statement(): {} {
 	compound_statement()
 	| <WHILE> {IIG.while1(model);} test() {IIG.while2(model);} statement() {IIG.while3(model);}
 	| <IF> test() {IIG.if1(model);} statement() [<ELSE> {IIG.if2(model);} statement()] {IIG.if3(model);}
-	| expression() <SEMICOLON>
+	| expression() <SEMICOLON> {IIG.reverseExpression(model);}
 	| <BREAK> <SEMICOLON> {IIG.breakAction(model);}
-	| <RETURN> expression() <SEMICOLON> 
+	| <RETURN> expression() <SEMICOLON> {IIG.returnStatement(model);}
 	| <CONTINUE> <SEMICOLON> {IIG.continueAction(model);}
 	| <SEMICOLON>
 }

@@ -61,6 +61,7 @@ public class Grammar implements GrammarConstants {
     } else if (jj_2_6(2)) {
       expression();
       jj_consume_token(SEMICOLON);
+                                    IIG.reverseExpression(model);
     } else if (jj_2_7(2)) {
       jj_consume_token(BREAK);
       jj_consume_token(SEMICOLON);
@@ -69,6 +70,7 @@ public class Grammar implements GrammarConstants {
       jj_consume_token(RETURN);
       expression();
       jj_consume_token(SEMICOLON);
+                                             IIG.returnStatement(model);
     } else if (jj_2_9(2)) {
       jj_consume_token(CONTINUE);
       jj_consume_token(SEMICOLON);

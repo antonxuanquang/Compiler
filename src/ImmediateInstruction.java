@@ -86,7 +86,7 @@ public class ImmediateInstruction {
 	}
 	
 	public String toString() {
-		return String.format("%s | %s @ %d | %s @ %d | %s @ %d | %d\n", operator, left, 
+		return String.format("'%s', '%s'@[%d], '%s'@[%d], '%s'@[%d], %d\n", operator, left, 
 				leftNextUse, right, rightNextUse, result, resultNextUse, startAddr);
 	}
 }
