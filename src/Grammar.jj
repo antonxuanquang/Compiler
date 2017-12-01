@@ -14,11 +14,13 @@ public class Grammar {
 
 	public static void main(String[] args) throws ParseException{
 		try {
-			FileReader fileReader = new FileReader(args[0]);
+			String fileName = args[0];
+			FileReader fileReader = new FileReader(fileName);
 			BufferedReader bf = new BufferedReader(fileReader);
 			Grammar parser = new Grammar(bf);
 			parser.program();
-			System.out.println(model);
+			CodeGenerator generator = new CodeGenerator(model, fileName);
+			generator.genCode();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

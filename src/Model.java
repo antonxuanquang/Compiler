@@ -55,7 +55,7 @@ public class Model {
 		StringBuilder sb = new StringBuilder();
 		sb.append("**************Immediate Instruction*****************\n");
 		for(int i = 0; i < immediateInstructionList.size(); i++) {
-			sb.append(i + "/ " + immediateInstructionList.get(i));
+			sb.append(i + "/ " + immediateInstructionList.get(i) + "\n");
 		}
 		sb.append("\n");
 		

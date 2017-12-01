@@ -9,11 +9,13 @@ public class Grammar implements GrammarConstants {
 
         public static void main(String[] args) throws ParseException{
                 try {
-                        FileReader fileReader = new FileReader(args[0]);
+                        String fileName = args[0];
+                        FileReader fileReader = new FileReader(fileName);
                         BufferedReader bf = new BufferedReader(fileReader);
                         Grammar parser = new Grammar(bf);
                         parser.program();
-                        System.out.println(model);
+                        CodeGenerator generator = new CodeGenerator(model, fileName);
+                        generator.genCode();
                 } catch (FileNotFoundException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -575,12 +577,6 @@ public class Grammar implements GrammarConstants {
     finally { jj_save(35, xla); }
   }
 
-  static private boolean jj_3_25() {
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_3R_10()) return true;
-    return false;
-  }
-
   static private boolean jj_3_24() {
     if (jj_scan_token(INT)) return true;
     return false;
@@ -959,6 +955,12 @@ public class Grammar implements GrammarConstants {
 
   static private boolean jj_3_26() {
     if (jj_scan_token(LESS_OP)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_25() {
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_10()) return true;
     return false;
   }
 
