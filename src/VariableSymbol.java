@@ -4,10 +4,11 @@ public class VariableSymbol extends Symbol{
 	
 	// this isn't data stype isn't the best for
 	// memory locations.
-	private String memLoc;
+	private int memLoc;
 	
 	public VariableSymbol(String id) {
 		super(id);
+		this.memLoc = -1;
 	}
 
 	public int getNextUse() {
@@ -18,11 +19,11 @@ public class VariableSymbol extends Symbol{
 		this.nextUse = nextUse;
 	}
 
-	public String getMemLoc() {
+	public int getMemLoc() {
 		return memLoc;
 	}
 
-	public void setMemLoc(String memLoc) {
+	public void setMemLoc(int memLoc) {
 		this.memLoc = memLoc;
 	}
 	

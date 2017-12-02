@@ -1,17 +1,16 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 
 public class CodeGenerator {
 	
 	private Model model;
 	private String inputFileName;
+	private RegisterTable rt;
+	private List<String> assemblyCodes;
 	
 	private class BasicBlock {	
 		int start;
@@ -29,6 +28,8 @@ public class CodeGenerator {
 	public CodeGenerator(Model model, String fileName) {
 		this.model = model;
 		this.inputFileName = fileName;
+		this.assemblyCodes = new ArrayList<String>();
+		this.rt = new RegisterTable(model, assemblyCodes);
 	}
 	
 	public void genCode() {
@@ -38,13 +39,16 @@ public class CodeGenerator {
 			int end = block.end;
 			List<ImmediateInstruction> instructionList = model.getImmediateInstructionList();
 			performLiveVariableAnalysis(start, end);
-			System.out.println(model);
 			for (int i = start; i <= end; i++) {
+				assemblyCodes.add("-----------------");
+				assemblyCodes.add("instruction: " + instructionList.get(i).toString());
 				generateCode(instructionList.get(i));
 			}
-			updateLiveVariable(start, end);
+			updateLiveVariable();
 		}
-		
+		for (String line: assemblyCodes) {
+			System.out.println(line);
+		}
 	}
 	
 	private void performLiveVariableAnalysis(int start, int end) {
@@ -85,13 +89,185 @@ public class CodeGenerator {
 	}
 
 	private void generateCode(ImmediateInstruction immediateInstruction) {
+		String operator = immediateInstruction.getOperator();
+		if (operator.equals("=")) {
+			generateAssignmentCode(immediateInstruction);
+		} else if ("+-*/%|&!neg".contains(operator)) {
+			generateArithmeticAndLogicalCode(immediateInstruction);
+		} else if ("==><>=<=".contains(operator)) {
+			generateRelationalCode(immediateInstruction);
+		} else if (operator.equals("jump")) {
+			generateJumpCode(immediateInstruction);
+		} else if (operator.equals("jeqz")) {
+			generateJeqzCode(immediateInstruction);
+		}
+	}
+	
+	private void updateSTandRTforResult(String result, int reg) {
 		// TODO Auto-generated method stub
+		model.getSymbolTable().get(result).setMemLoc(reg);
+		rt.getRegList()[reg].add(result);
+	}
+	
+	private void generateAssignmentCode(ImmediateInstruction immediateInstruction) {
+		String left = immediateInstruction.getLeft();
+		int leftNextUse = immediateInstruction.getLeftNextUse();
+		String result = immediateInstruction.getResult();
+		
+		// if 'left' is not in a reg
+		int leftReg = rt.where(left);
+		int reg = rt.getReg(left, leftNextUse);
+		if (leftReg < 0) {
+			assemblyCodes.add(String.format("%s %s, D%d", "move.l", left, reg));
+		}
+		
+		// if ('left' is not live) and ('left' is in a reg)
+		if (leftNextUse < 0 && leftReg >= 0) {
+			rt.getRegList()[leftReg].remove(left);
+			model.getSymbolTable().get(left).setMemLoc(reg);
+		}
+		
+		updateSTandRTforResult(result, reg);
+	}
+
+	private void generateArithmeticAndLogicalCode(ImmediateInstruction immediateInstruction) {
+		String operator = immediateInstruction.getOperator();
+		String left = immediateInstruction.getLeft();
+		int leftNextUse = immediateInstruction.getLeftNextUse();
+		String right = immediateInstruction.getRight();
+		int rightNextUse = immediateInstruction.getRightNextUse();
+		String result = immediateInstruction.getResult();
+		
+		// if 'left' is not in REG ...
+		int reg = rt.getReg(left, leftNextUse);
+		int leftReg = rt.where(left);
+		if (!rt.isInReg(left, reg)) {
+			if (reg != leftReg) {
+				assemblyCodes.add(String.format("%s D%d, D%d", "move.l", leftReg, reg));
+			} else {
+				assemblyCodes.add(String.format("%s %s, D%d", "move.l", left, reg));
+			}
+		}
+		
+		// if 'left' = 'right'
+		int rightReg = rt.where(right);
+		if (left.equals(right)) {
+			assemblyCodes.add(String.format("%s D%d, D%d", operator, reg, reg));
+		} else {
+			if (rightReg >= 0) {
+				assemblyCodes.add(String.format("%s D%d, D%d", operator, rightReg, reg));
+			} else {
+				assemblyCodes.add(String.format("%s %s, D%d", operator, right, reg));
+			}
+		}
+		
+		// if ('left' is not live) and ('left' is in a reg)
+		if (leftNextUse < 0 && leftReg >= 0) {
+			rt.getRegList()[leftReg].remove(left);
+			model.getSymbolTable().get(left).setMemLoc(reg);
+		}
+		
+		// if ('right' is not live) and ('right' is in a reg)
+		if (rightNextUse < 0 && rightReg >= 0) {
+			rt.getRegList()[rightReg].remove(right);
+			model.getSymbolTable().get(right).setMemLoc(reg);
+		}
+		
+		updateSTandRTforResult(result, reg);
+	}	
+
+	private void generateRelationalCode(ImmediateInstruction immediateInstruction) {
+		String operator = immediateInstruction.getOperator();
+		String left = immediateInstruction.getLeft();
+		int leftNextUse = immediateInstruction.getLeftNextUse();
+		String right = immediateInstruction.getRight();
+		int rightNextUse = immediateInstruction.getRightNextUse();
+		String result = immediateInstruction.getResult();
+		
+		// if 'left' is not in REG ...
+		int reg = rt.getReg(left, leftNextUse);
+		int leftReg = rt.where(left);
+		if (!rt.isInReg(left, reg)) {
+			if (reg != leftReg) {
+				assemblyCodes.add(String.format("%s D%d, D%d", "move.l", leftReg, reg));
+			} else {
+				assemblyCodes.add(String.format("%s %s, D%d", "move.l", left, reg));
+			}
+		}
+		
+		// if 'right' is in a reg(r) ...
+		int rightReg = rt.where(right);
+		if (rightReg >= 0) {
+			assemblyCodes.add(String.format("%s D%d, D%d", "cmp.l", rightReg, reg));
+		} else {
+			assemblyCodes.add(String.format("%s %s, D%d", "cmp.l", right, reg));
+		}
+		
+		// generate ...
+		assemblyCodes.add(String.format("%s %d", "B_" + operator, assemblyCodes.size() * 2 + 4));
+		assemblyCodes.add(String.format("%s %d", "clr.l", reg));
+		assemblyCodes.add(String.format("%s %d", "bra", assemblyCodes.size() * 2 + 2));
+		assemblyCodes.add(String.format("%s #1, D%d", "move.l", rightReg, reg));
+		
+		// if ('left' is not live) and ('left' is in a reg)
+		if (leftNextUse < 0 && leftReg >= 0) {
+			rt.getRegList()[leftReg].remove(left);
+			model.getSymbolTable().get(left).setMemLoc(reg);
+		}
+		
+		// if ('right' is not live) and ('right' is in a reg)
+		if (rightNextUse < 0 && rightReg >= 0) {
+			rt.getRegList()[rightReg].remove(right);
+			model.getSymbolTable().get(right).setMemLoc(reg);
+		}
+		
+		updateSTandRTforResult(result, reg);
 		
 	}
 
-	private void updateLiveVariable(int start, int end) {
-		// TODO Auto-generated method stub
+	private void generateJumpCode(ImmediateInstruction immediateInstruction) {
+		String result = immediateInstruction.getResult();
 		
+		// generate store instructions for vars that are live & not in memory
+		updateLiveVariable();
+		
+		int nextInstruction = Integer.parseInt(result);
+		assemblyCodes.add(String.format("%s #%d", "bra", 
+				model.getImmediateInstructionList().get(nextInstruction).getStartAddr()));
+	}
+
+	private void generateJeqzCode(ImmediateInstruction immediateInstruction) {
+		String left = immediateInstruction.getLeft();
+		int leftNextUse = immediateInstruction.getLeftNextUse();
+		String result = immediateInstruction.getResult();
+		
+		// if 'left' is not in a reg
+		int leftReg = rt.where(left);
+		int reg = rt.getReg(left, leftNextUse);
+		if (leftReg < 0) {
+			assemblyCodes.add(String.format("%s %s, D%d", "move.l", left, reg));
+		}
+		
+		// generate store instructions for vars that are live & not in memory
+		updateLiveVariable();
+		
+		// generate ...
+		assemblyCodes.add(String.format("%s D%d", "tst", reg));
+		int nextInstruction = Integer.parseInt(result);
+		assemblyCodes.add(String.format("%s #%d", "beq", 
+				model.getImmediateInstructionList().get(nextInstruction).getStartAddr()));
+		
+	}
+
+	private void updateLiveVariable() {
+		// generate store instructions for vars that are live & not in memory
+		Set<String>[] regList = rt.getRegList();
+		for (int i = 0; i < regList.length; i++) {
+			for (String name: regList[i]) {
+				assemblyCodes.add(String.format("%s D%d, %s", "move.l", i, name));
+			}
+			regList[i] = new HashSet<String>();
+		}
 	}
 
 	private List<BasicBlock> findBasicBlocks() {
@@ -130,9 +306,6 @@ public class CodeGenerator {
 		}
 		return result;		
 	}
-	
-	
-
 }
 
 
