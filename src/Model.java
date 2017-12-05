@@ -53,11 +53,11 @@ public class Model {
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("**************Immediate Instruction*****************\n");
-		for(int i = 0; i < immediateInstructionList.size(); i++) {
-			sb.append(i + "/ " + immediateInstructionList.get(i) + "\n");
-		}
-		sb.append("\n");
+//		sb.append("**************Immediate Instruction*****************\n");
+//		for(int i = 0; i < immediateInstructionList.size(); i++) {
+//			sb.append(i + "/ " + immediateInstructionList.get(i) + "\n");
+//		}
+//		sb.append("\n");
 		
 		sb.append("**************Symbol Table*****************\n");
 		for (String key: symbolTable.keySet()) {
@@ -65,23 +65,23 @@ public class Model {
 		}
 		sb.append("\n");
 		
-		sb.append("**************Symbol Stack*****************\n");
-		for (Symbol symbol: symbolStack) {
-			sb.append(symbol + "\n");
-		}
-		sb.append("\n");
-		
-		sb.append("**************Counter Stack*****************\n");
-		for (Integer counter: instructionCounterStack) {
-			sb.append(counter + "\n");
-		}
-		sb.append("\n");
-		
-		sb.append("**************While Stack*****************\n");
-		for (Integer counter: whileStack) {
-			sb.append(counter + "\n");
-		}
-		sb.append("\n");
+//		sb.append("**************Symbol Stack*****************\n");
+//		for (Symbol symbol: symbolStack) {
+//			sb.append(symbol + "\n");
+//		}
+//		sb.append("\n");
+//		
+//		sb.append("**************Counter Stack*****************\n");
+//		for (Integer counter: instructionCounterStack) {
+//			sb.append(counter + "\n");
+//		}
+//		sb.append("\n");
+//		
+//		sb.append("**************While Stack*****************\n");
+//		for (Integer counter: whileStack) {
+//			sb.append(counter + "\n");
+//		}
+//		sb.append("\n");
 		
 		return sb.toString();
 		

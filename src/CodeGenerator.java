@@ -34,6 +34,7 @@ public class CodeGenerator {
 	
 	public void genCode() {
 		List<BasicBlock> basicBlocks = findBasicBlocks();
+		model.getImmediateInstructionList().add(new ImmediateInstruction("", "", "", ""));
 		for (BasicBlock block: basicBlocks) {
 			int start = block.start;
 			int end = block.end;
@@ -43,6 +44,7 @@ public class CodeGenerator {
 				assemblyCodes.add("-----------------");
 				assemblyCodes.add("instruction: " + instructionList.get(i).toString());
 				generateCode(instructionList.get(i));
+				assemblyCodes.add(rt.toString());
 			}
 			updateLiveVariable();
 		}
@@ -59,8 +61,7 @@ public class CodeGenerator {
 		// initialize next use field in ST for all variables
 		for (String key: symbolTable.keySet()) {
 			VariableSymbol symbol = symbolTable.get(key);
-			String id = symbol.getId();
-			if (id.startsWith("T") && id.length() == 6) {
+			if (symbol.isTempVariable()) {
 				symbol.setNextUse(-1);
 			} else {
 				symbol.setNextUse(Integer.MAX_VALUE);
@@ -94,7 +95,7 @@ public class CodeGenerator {
 			generateAssignmentCode(immediateInstruction);
 		} else if ("+-*/%|&!neg".contains(operator)) {
 			generateArithmeticAndLogicalCode(immediateInstruction);
-		} else if ("==><>=<=".contains(operator)) {
+		} else if ("==>=<=".contains(operator)) {
 			generateRelationalCode(immediateInstruction);
 		} else if (operator.equals("jump")) {
 			generateJumpCode(immediateInstruction);
@@ -104,7 +105,10 @@ public class CodeGenerator {
 	}
 	
 	private void updateSTandRTforResult(String result, int reg) {
-		// TODO Auto-generated method stub
+		int oldIndex = model.getSymbolTable().get(result).getMemLoc();
+		if (oldIndex != reg && oldIndex >= 0) {
+			rt.getRegList()[oldIndex].remove(result);
+		}
 		model.getSymbolTable().get(result).setMemLoc(reg);
 		rt.getRegList()[reg].add(result);
 	}
@@ -116,9 +120,12 @@ public class CodeGenerator {
 		
 		// if 'left' is not in a reg
 		int leftReg = rt.where(left);
-		int reg = rt.getReg(left, leftNextUse);
+		int reg = -1;
 		if (leftReg < 0) {
-			assemblyCodes.add(String.format("%s %s, D%d", "move.l", left, reg));
+			reg = rt.getReg(left, leftNextUse);
+			assemblyCodes.add(String.format("%s %s, D%d", "move.l", numberOrVariable(left), reg));
+		} else {
+			reg = model.getSymbolTable().get(left).getMemLoc();
 		}
 		
 		// if ('left' is not live) and ('left' is in a reg)
@@ -128,6 +135,19 @@ public class CodeGenerator {
 		}
 		
 		updateSTandRTforResult(result, reg);
+	}
+
+	private String numberOrVariable(String left) {
+		return isNumber(left) ? "#" + left : left;
+	}
+
+	private boolean isNumber(String left) {
+		try {
+			Integer.parseInt(left);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
 	}
 
 	private void generateArithmeticAndLogicalCode(ImmediateInstruction immediateInstruction) {
@@ -142,22 +162,39 @@ public class CodeGenerator {
 		int reg = rt.getReg(left, leftNextUse);
 		int leftReg = rt.where(left);
 		if (!rt.isInReg(left, reg)) {
-			if (reg != leftReg) {
+			if (leftReg >= 0) {
 				assemblyCodes.add(String.format("%s D%d, D%d", "move.l", leftReg, reg));
 			} else {
-				assemblyCodes.add(String.format("%s %s, D%d", "move.l", left, reg));
+				assemblyCodes.add(String.format("%s %s, D%d", "move.l", numberOrVariable(left), reg));
 			}
 		}
 		
 		// if 'left' = 'right'
 		int rightReg = rt.where(right);
+		String leftPart = "";
+		String rightPart = "";
 		if (left.equals(right)) {
-			assemblyCodes.add(String.format("%s D%d, D%d", operator, reg, reg));
+			leftPart = String.format("D%d", left); 
+			rightPart = String.format("D%d", right);
 		} else {
 			if (rightReg >= 0) {
-				assemblyCodes.add(String.format("%s D%d, D%d", operator, rightReg, reg));
+				leftPart = String.format("D%d", rightReg); 
+				rightPart = String.format("D%d", reg);
 			} else {
-				assemblyCodes.add(String.format("%s %s, D%d", operator, right, reg));
+				leftPart = String.format("%s", right); 
+				rightPart = String.format("D%d", reg);
+			}			
+		}
+		
+		if ("neg!".contains(operator)) {
+			assemblyCodes.add(String.format("%s %s", transformOperation(operator), rightPart));
+		} else {
+			assemblyCodes.add(String.format("%s %s, %s", transformOperation(operator), 
+					numberOrVariable(leftPart), rightPart));
+			if (operator.equals("/")) {
+				assemblyCodes.add(String.format("%s %s, %s", "and", "#$00FF", rightPart));
+			} else if (operator.equals("%")) {
+				assemblyCodes.add(String.format("%s %s, %s", "slr", "#16", rightPart));
 			}
 		}
 		
@@ -176,6 +213,24 @@ public class CodeGenerator {
 		updateSTandRTforResult(result, reg);
 	}	
 
+	private String transformOperation(String operator) {
+		switch(operator) {
+		case "+": return "add";
+		case "-": return "sub";
+		case "*": return "mul";
+		case "/": return "div";
+		case "%": return "div";
+		case "&": return "and";
+		case "|": return "or";
+		case "==": return "eq";
+		case "<": return "lt";
+		case "<=": return "lt";
+		case ">": return "gt";
+		case ">=": return "ge";
+		}
+		return operator;
+	}
+
 	private void generateRelationalCode(ImmediateInstruction immediateInstruction) {
 		String operator = immediateInstruction.getOperator();
 		String left = immediateInstruction.getLeft();
@@ -188,7 +243,7 @@ public class CodeGenerator {
 		int reg = rt.getReg(left, leftNextUse);
 		int leftReg = rt.where(left);
 		if (!rt.isInReg(left, reg)) {
-			if (reg != leftReg) {
+			if (leftReg >= 0) {
 				assemblyCodes.add(String.format("%s D%d, D%d", "move.l", leftReg, reg));
 			} else {
 				assemblyCodes.add(String.format("%s %s, D%d", "move.l", left, reg));
@@ -204,9 +259,9 @@ public class CodeGenerator {
 		}
 		
 		// generate ...
-		assemblyCodes.add(String.format("%s %d", "B_" + operator, assemblyCodes.size() * 2 + 4));
+		assemblyCodes.add(String.format("b%s %d", transformOperation(operator), assemblyCodes.size() * 4 + 8));
 		assemblyCodes.add(String.format("%s %d", "clr.l", reg));
-		assemblyCodes.add(String.format("%s %d", "bra", assemblyCodes.size() * 2 + 2));
+		assemblyCodes.add(String.format("%s %d", "bra", assemblyCodes.size() * 4 + 4));
 		assemblyCodes.add(String.format("%s #1, D%d", "move.l", rightReg, reg));
 		
 		// if ('left' is not live) and ('left' is in a reg)
@@ -264,7 +319,9 @@ public class CodeGenerator {
 		Set<String>[] regList = rt.getRegList();
 		for (int i = 0; i < regList.length; i++) {
 			for (String name: regList[i]) {
-				assemblyCodes.add(String.format("%s D%d, %s", "move.l", i, name));
+				if (!model.getSymbolTable().get(name).isTempVariable()) {
+					assemblyCodes.add(String.format("%s D%d, %s", "move.l", i, name));
+				}
 			}
 			regList[i] = new HashSet<String>();
 		}

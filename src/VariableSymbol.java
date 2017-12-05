@@ -30,5 +30,9 @@ public class VariableSymbol extends Symbol{
 	public String toString() {
 		return String.format("VariableSymbol(id = '%s', nextUse = %d, memLoc = '%s')", id, nextUse, memLoc);
 	}
+	
+	public boolean isTempVariable() {
+		return this.getId().startsWith(".") && this.getId().length() == 6;
+	}
 
 }

@@ -1,1 +1,7 @@
-Variable can't start with T and has length of 6
+Still haven't check for immediate instruction addresses: 4 bytes
+Unary Operations weren't casted
+Div and Mod weren't casted
+Haven't dealed with unary operations
+Don't do live update for temp variables
+Mod instruction in assembly: 16 high: remainder --> and or shift to get quotient or remainder
+== instruction in assembly: cmp.l a,b

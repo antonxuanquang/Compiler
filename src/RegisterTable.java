@@ -25,10 +25,13 @@ public class RegisterTable {
 	
 	public int getReg(String id, int nextUse) {
 		for (int i = 1; i < NUM_REG; i++) {
-			if (regList[i].contains(id) && regList[i].size() > 1
-					&& nextUse >= 0) {
+			if (regList[i].contains(id) && regList[i].size() == 1 && nextUse < 0) {
 				return i;
-			} else if(regList[i].isEmpty()) {
+			}
+		}
+		
+		for (int i = 1; i < NUM_REG; i++) {
+			if(regList[i].isEmpty()) {
 				return i;
 			}
 		}
@@ -62,6 +65,15 @@ public class RegisterTable {
 	
 	public boolean isInReg(String id, int index) {
 		return regList[index].contains(id);
+	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("**************Reg Table*****************\n");
+		for (int i = 0; i < NUM_REG; i++) {
+			sb.append(String.format("%d: %s\n", i, regList[i].toString()));
+		}
+		return sb.toString();
 	}
 
 }

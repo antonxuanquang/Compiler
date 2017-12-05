@@ -7,7 +7,7 @@ public class IIG {
 		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
         StringBuilder salt = new StringBuilder();
         Random rnd = new Random();
-        salt.append("T");
+        salt.append(".");
         while (salt.length() < 6) { // length of the random string.
             int index = (int) (rnd.nextFloat() * SALTCHARS.length());
             salt.append(SALTCHARS.charAt(index));
@@ -169,7 +169,6 @@ public class IIG {
 			ImmediateInstruction instruction =  model.getImmediateInstructionList().get(nextCounter);
 			nextCounter = Integer.parseInt(instruction.getResult());
 			instruction.setResult("" + nextImmediateInstructionCounter);
-			
 		}
 	}
 }
