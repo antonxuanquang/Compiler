@@ -43,6 +43,7 @@ public class CodeGenerator {
 			for (int i = start; i <= end; i++) {
 				assemblyCodes.add("-----------------");
 				assemblyCodes.add("instruction: " + instructionList.get(i).toString());
+				instructionList.get(i).setStartAddr(assemblyCodes.size() * 4);
 				generateCode(instructionList.get(i));
 				assemblyCodes.add(rt.toString());
 			}
@@ -255,14 +256,14 @@ public class CodeGenerator {
 		if (rightReg >= 0) {
 			assemblyCodes.add(String.format("%s D%d, D%d", "cmp.l", rightReg, reg));
 		} else {
-			assemblyCodes.add(String.format("%s %s, D%d", "cmp.l", right, reg));
+			assemblyCodes.add(String.format("%s %s, D%d", "cmp.l", numberOrVariable(right), reg));
 		}
 		
 		// generate ...
-		assemblyCodes.add(String.format("b%s %d", transformOperation(operator), assemblyCodes.size() * 4 + 8));
-		assemblyCodes.add(String.format("%s %d", "clr.l", reg));
-		assemblyCodes.add(String.format("%s %d", "bra", assemblyCodes.size() * 4 + 4));
-		assemblyCodes.add(String.format("%s #1, D%d", "move.l", rightReg, reg));
+		assemblyCodes.add(String.format("b%s #%d", transformOperation(operator), assemblyCodes.size() * 4 + 8));
+		assemblyCodes.add(String.format("%s D%d", "clr.l", reg));
+		assemblyCodes.add(String.format("%s #%d", "bra", assemblyCodes.size() * 4 + 4));
+		assemblyCodes.add(String.format("%s #1, D%d", "move.l", reg));
 		
 		// if ('left' is not live) and ('left' is in a reg)
 		if (leftNextUse < 0 && leftReg >= 0) {
@@ -298,9 +299,12 @@ public class CodeGenerator {
 		
 		// if 'left' is not in a reg
 		int leftReg = rt.where(left);
-		int reg = rt.getReg(left, leftNextUse);
+		int reg = -1;
 		if (leftReg < 0) {
+			reg = rt.getReg(left, leftNextUse);
 			assemblyCodes.add(String.format("%s %s, D%d", "move.l", left, reg));
+		} else {
+			reg = model.getSymbolTable().get(left).getMemLoc();
 		}
 		
 		// generate store instructions for vars that are live & not in memory
