@@ -71,9 +71,10 @@ public class IIG {
 		model.getSymbolStack().push(temp);
 	}
 	
-	public static void pushID(Model model, Token token) {
+	public static void pushID(Model model, Token token) throws ParseException {
 		String id = token.image;
-		VariableSymbol symbol = model.getSymbolTable().getOrDefault(id, new VariableSymbol(id));
+		VariableSymbol symbol = model.getSymbolTable().get(id);
+		if (symbol == null) throw new ParseException("'" + id + "' has not been initiated");
 		model.getSymbolStack().push(symbol);
 		model.getSymbolTable().put(token.image, symbol);
 	}

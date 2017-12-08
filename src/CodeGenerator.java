@@ -11,6 +11,7 @@ public class CodeGenerator {
 	private String inputFileName;
 	private RegisterTable rt;
 	private List<String> assemblyCodes;
+	private int lastIndex = -1;
 	
 	private class BasicBlock {	
 		int start;
@@ -33,25 +34,35 @@ public class CodeGenerator {
 	}
 	
 	public void genCode() {
+		generateCode();
+		lastIndex = assemblyCodes.size() * 4;
+		assemblyCodes = new ArrayList<String>();
+		generateCode();
+		int i = 0;
+		for (String line: assemblyCodes) {
+			System.out.println(i * 4 + ": " + line);
+			i++;
+		}
+	}
+	
+	private void generateCode() {
 		List<BasicBlock> basicBlocks = findBasicBlocks();
-		model.getImmediateInstructionList().add(new ImmediateInstruction("", "", "", ""));
+		ImmediateInstruction instruction = new ImmediateInstruction("", "", "", "");
+		instruction.setStartAddr(lastIndex);
+		model.getImmediateInstructionList().add(instruction);
 		for (BasicBlock block: basicBlocks) {
 			int start = block.start;
 			int end = block.end;
 			List<ImmediateInstruction> instructionList = model.getImmediateInstructionList();
 			performLiveVariableAnalysis(start, end);
 			for (int i = start; i <= end; i++) {
-				assemblyCodes.add("-----------------");
-				assemblyCodes.add("instruction: " + instructionList.get(i).toString());
 				instructionList.get(i).setStartAddr(assemblyCodes.size() * 4);
 				generateCode(instructionList.get(i));
-				assemblyCodes.add(rt.toString());
+//				assemblyCodes.add(rt.toString());
 			}
 			updateLiveVariable();
 		}
-		for (String line: assemblyCodes) {
-			System.out.println(line);
-		}
+		model.getImmediateInstructionList().remove(model.getImmediateInstructionList().size() - 1);
 	}
 	
 	private void performLiveVariableAnalysis(int start, int end) {
@@ -260,9 +271,9 @@ public class CodeGenerator {
 		}
 		
 		// generate ...
-		assemblyCodes.add(String.format("b%s #%d", transformOperation(operator), assemblyCodes.size() * 4 + 8));
+		assemblyCodes.add(String.format("b%s #%d", transformOperation(operator), (assemblyCodes.size() + 3) * 4));
 		assemblyCodes.add(String.format("%s D%d", "clr.l", reg));
-		assemblyCodes.add(String.format("%s #%d", "bra", assemblyCodes.size() * 4 + 4));
+		assemblyCodes.add(String.format("%s #%d", "bra", (assemblyCodes.size() + 2) * 4));
 		assemblyCodes.add(String.format("%s #1, D%d", "move.l", reg));
 		
 		// if ('left' is not live) and ('left' is in a reg)
