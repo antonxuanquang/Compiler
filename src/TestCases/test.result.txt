@@ -1,0 +1,27 @@
+0: move.l #3, D1
+4: cmp.l #4, D1
+8: beq #20
+12: clr.l D1
+16: bra #24
+20: move.l #1, D1
+24: tst D1
+28: beq #60
+32: move.l #4, D1
+36: cmp.l #5, D1
+40: bgt #52
+44: clr.l D1
+48: bra #56
+52: move.l #1, D1
+56: bra #104
+60: move.l #3, D1
+64: cmp.l #2, D1
+68: blt #80
+72: clr.l D1
+76: bra #84
+80: move.l #1, D1
+84: tst D1
+88: beq #100
+92: move.l #1, D1
+96: bra #104
+100: move.l #0, D1
+104: move.l D1, a

@@ -135,7 +135,11 @@ public class CodeGenerator {
 		int reg = -1;
 		if (leftReg < 0) {
 			reg = rt.getReg(left, leftNextUse);
-			assemblyCodes.add(String.format("%s %s, D%d", "move.l", numberOrVariable(left), reg));
+			VariableSymbol symbol = (VariableSymbol) model.getSymbolTable().get(left);
+			if (symbol == null || !symbol.isTempVariable()) {
+				assemblyCodes.add(String.format("%s %s, D%d", "move.l", numberOrVariable(left), reg));
+			}
+			
 		} else {
 			reg = model.getSymbolTable().get(left).getMemLoc();
 		}
@@ -258,7 +262,7 @@ public class CodeGenerator {
 			if (leftReg >= 0) {
 				assemblyCodes.add(String.format("%s D%d, D%d", "move.l", leftReg, reg));
 			} else {
-				assemblyCodes.add(String.format("%s %s, D%d", "move.l", left, reg));
+				assemblyCodes.add(String.format("%s %s, D%d", "move.l", numberOrVariable(left), reg));
 			}
 		}
 		
