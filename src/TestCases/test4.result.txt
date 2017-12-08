@@ -1,16 +1,48 @@
-Exception in thread "main" ParseException: 'a' has not been initiated
-	at IIG.pushID(IIG.java:77)
-	at Grammar.primary(Grammar.java:245)
-	at Grammar.factor(Grammar.java:230)
-	at Grammar.term(Grammar.java:213)
-	at Grammar.sum(Grammar.java:197)
-	at Grammar.relation(Grammar.java:185)
-	at Grammar.comparison(Grammar.java:173)
-	at Grammar.conjunction(Grammar.java:157)
-	at Grammar.disjunction(Grammar.java:141)
-	at Grammar.condition(Grammar.java:125)
-	at Grammar.expression(Grammar.java:117)
-	at Grammar.test(Grammar.java:104)
-	at Grammar.statement(Grammar.java:46)
-	at Grammar.program(Grammar.java:35)
-	at Grammar.main(Grammar.java:16)
+0: move.l #4, D1
+4: move.l D1, a
+8: move.l a, D1
+12: cmp.l #1, D1
+16: beq #28
+20: clr.l D1
+24: bra #32
+28: move.l #1, D1
+32: tst D1
+36: beq #192
+40: move.l #3, D1
+44: move.l D1, D2
+48: cmp.l #3, D2
+52: beq #64
+56: clr.l D2
+60: bra #68
+64: move.l #1, D2
+68: move.l D1, a
+72: tst D2
+76: beq #88
+80: bra #8
+84: bra #92
+88: bra #192
+92: move.l #4, D1
+96: move.l D1, b
+100: move.l b, D1
+104: cmp.l #3, D1
+108: bgt #120
+112: clr.l D1
+116: bra #124
+120: move.l #1, D1
+124: tst D1
+128: beq #188
+132: move.l a, D1
+136: cmp.l #4, D1
+140: bgt #152
+144: clr.l D1
+148: bra #156
+152: move.l #1, D1
+156: tst D1
+160: beq #172
+164: bra #188
+168: bra #184
+172: move.l #4, D1
+176: move.l D1, c
+180: bra #100
+184: bra #100
+188: bra #8

@@ -146,7 +146,7 @@ public class IIG {
 	
 	public static void breakAction(Model model) throws ParseException {
 		if (model.getWhileStack().isEmpty()) 
-			throw new ParseException("Attempt to use continue outside while loop");
+			throw new ParseException("Attempt to use break outside while loop");
 		int a = model.getWhileStack().pop();
 		model.getWhileStack().push(model.getNextImmediateInstructionCounter());
 		model.generateImmediateInstruction("jump", "", "", "" + a);
@@ -154,10 +154,10 @@ public class IIG {
 	
 	public static void continueAction(Model model) throws ParseException {
 		if (model.getWhileStack().isEmpty()) 
-			throw new ParseException("Attempt to use break outside while loop");
+			throw new ParseException("Attempt to use continue outside while loop");
 		int a = model.getWhileStack().pop();
 		if (model.getWhileStack().isEmpty()) 
-			throw new ParseException("Attempt to use break outside while loop");
+			throw new ParseException("Attempt to use continue outside while loop");
 		int b = model.getWhileStack().pop();
 		model.getWhileStack().push(b);
 		model.getWhileStack().push(a);

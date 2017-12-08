@@ -1,27 +1,182 @@
-0: move.l #3, D1
-4: cmp.l #4, D1
-8: beq #20
-12: clr.l D1
-16: bra #24
-20: move.l #1, D1
-24: tst D1
-28: beq #60
-32: move.l #4, D1
-36: cmp.l #5, D1
-40: bgt #52
-44: clr.l D1
-48: bra #56
-52: move.l #1, D1
-56: bra #104
-60: move.l #3, D1
-64: cmp.l #2, D1
-68: blt #80
-72: clr.l D1
-76: bra #84
-80: move.l #1, D1
-84: tst D1
-88: beq #100
-92: move.l #1, D1
-96: bra #104
-100: move.l #0, D1
-104: move.l D1, a
+0: move.l #0, D1
+4: move.l D1, D2
+8: add #5, D2
+12: div #10, D2
+16: and #$00FF, D2
+20: div #3, D2
+24: slr #16, D2
+28: mul #2, D2
+32: move.l D1, D3
+36: add D2, D3
+40: sub #13, D3
+44: move.l #15, D2
+48: not D2
+52: mul D3, D2
+56: move.l D1, D4
+60: and D2, D4
+64: move.l #77, D2
+68: neg D2
+72: or D2, D4
+76: move.l #5, D2
+80: move.l D3, D4
+84: add D2, D4
+88: move.l D2, D5
+92: cmp.l #5, D5
+96: beq #108
+100: clr.l D5
+104: bra #112
+108: move.l #1, D5
+112: move.l D3, D6
+116: add D5, D6
+120: move.l D1, a
+124: move.l D2, c
+128: move.l D3, b
+132: move.l D6, d
+136: tst D1
+140: beq #152
+144: move.l b, D1
+148: bra #156
+152: move.l c, D1
+156: move.l a, D2
+160: cmp.l #5, D2
+164: bgt #176
+168: clr.l D2
+172: bra #180
+176: move.l #1, D2
+180: move.l D1, e
+184: tst D2
+188: beq #196
+192: move.l #0, D1
+196: move.l D1, D2
+200: cmp.l #0, D2
+204: blt #216
+208: clr.l D2
+212: bra #220
+216: move.l #1, D2
+220: move.l D1, b
+224: tst D2
+228: beq #244
+232: move.l #5, D1
+236: move.l D1, c
+240: bra #252
+244: move.l #1, D1
+248: move.l D1, c
+252: move.l c, D1
+256: cmp.l #13, D1
+260: beq #272
+264: clr.l D1
+268: bra #276
+272: move.l #1, D1
+276: tst D1
+280: beq #288
+284: bra #316
+288: move.l #1, D1
+292: move.l #2, D2
+296: move.l #13, D3
+300: neg D3
+304: move.l D1, a
+308: move.l D2, b
+312: move.l D3, d
+316: move.l #1, D1
+320: move.l D1, a
+324: tst D1
+328: beq #440
+332: move.l b, D1
+336: cmp.l #2, D1
+340: bge #352
+344: clr.l D1
+348: bra #356
+352: move.l #1, D1
+356: tst D1
+360: beq #432
+364: move.l #12, D1
+368: neg D1
+372: move.l c, D2
+376: cmp.l D1, D2
+380: blt #392
+384: clr.l D2
+388: bra #396
+392: move.l #1, D2
+396: tst D2
+400: beq #416
+404: move.l #5, D1
+408: move.l D1, b
+412: bra #428
+416: move.l #2, D1
+420: neg D1
+424: move.l D1, b
+428: bra #440
+432: move.l #0, D1
+436: move.l D1, b
+440: move.l #4, D1
+444: move.l #3, D2
+448: move.l D1, A
+452: move.l D1, x
+456: move.l D2, b
+460: tst D2
+464: beq #484
+468: move.l b, D1
+472: add c, D1
+476: move.l D1, a
+480: bra #524
+484: move.l A, D1
+488: cmp.l #2, D1
+492: bgt #504
+496: clr.l D1
+500: bra #508
+504: move.l #1, D1
+508: tst D1
+512: beq #524
+516: move.l #5, D1
+520: move.l D1, a
+524: move.l x, D1
+528: tst D1
+532: beq #548
+536: move.l #3, D1
+540: move.l D1, a
+544: bra #524
+548: move.l a, D1
+552: cmp.l b, D1
+556: bgt #568
+560: clr.l D1
+564: bra #572
+568: move.l #1, D1
+572: tst D1
+576: beq #728
+580: move.l d, D1
+584: mul e, D1
+588: move.l D1, c
+592: move.l b, D1
+596: cmp.l #0, D1
+600: beq #612
+604: clr.l D1
+608: bra #616
+612: move.l #1, D1
+616: tst D1
+620: beq #676
+624: move.l c, D1
+628: cmp.l d, D1
+632: blt #644
+636: clr.l D1
+640: bra #648
+644: move.l #1, D1
+648: tst D1
+652: beq #668
+656: move.l #9, D1
+660: move.l D1, A
+664: bra #672
+668: bra #676
+672: bra #592
+676: move.l a, D1
+680: cmp.l c, D1
+684: bge #696
+688: clr.l D1
+692: bra #700
+696: move.l #1, D1
+700: tst D1
+704: beq #712
+708: bra #548
+712: bra #728
+716: move.l #5, D1
+720: move.l D1, b
+724: bra #548

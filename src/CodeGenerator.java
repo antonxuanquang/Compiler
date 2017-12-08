@@ -202,8 +202,10 @@ public class CodeGenerator {
 			}			
 		}
 		
-		if ("neg!".contains(operator)) {
-			assemblyCodes.add(String.format("%s %s", transformOperation(operator), rightPart));
+		if (operator.equals("!")) {
+			assemblyCodes.add(String.format("%s %s", "not", rightPart));
+		} else if (operator.equals("neg")) {
+			assemblyCodes.add(String.format("%s %s", "neg", rightPart));
 		} else {
 			assemblyCodes.add(String.format("%s %s, %s", transformOperation(operator), 
 					numberOrVariable(leftPart), rightPart));

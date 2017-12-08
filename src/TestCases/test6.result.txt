@@ -1,5 +1,8 @@
 0: move.l #3, D1
 4: move.l D1, D2
 8: neg D2
-12: move.l D1, b
-16: move.l D2, a
+12: move.l #4, D3
+16: not D3
+20: move.l D1, b
+24: move.l D2, a
+28: move.l D3, c
