@@ -7,12 +7,10 @@ public class RegisterTable {
 	
 	private Set<String> [] regList;
 	private Model model;
-	private List<String> assemblyCodes;
 	private final int NUM_REG = 8;
 	
-	public RegisterTable(Model model, List<String> assemblyCodes) {
+	public RegisterTable(Model model) {
 		this.model = model;
-		this.assemblyCodes = assemblyCodes;
 		regList = new HashSet[NUM_REG];
 		for (int i = 0; i < NUM_REG; i++) {
 			regList[i] = new HashSet<String>();
@@ -42,15 +40,14 @@ public class RegisterTable {
 		Set<String> names = regList[reg];
 		for (String name: names) {
 			// generate store instructions for all names in the reg
-			assemblyCodes.add(String.format("%s D%d, %s", "move.l", reg, name));
+			model.getAssemblyCodes().add(String.format("%s D%d, %s", "move.l", reg, name));
 			
 			// update ST locations for those names above
-			model.getSymbolTable().get(name).setMemLoc(Integer.MAX_VALUE);
+			model.getSymbolTable().get(name).setMemLoc(-1);
 		}
 		
 		// update RT for that reg
 		regList[reg] = new HashSet<String>();
-		regList[reg].add(id);
 		
 		return reg;
 	}

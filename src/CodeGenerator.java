@@ -10,7 +10,6 @@ public class CodeGenerator {
 	private Model model;
 	private String inputFileName;
 	private RegisterTable rt;
-	private List<String> assemblyCodes;
 	private int lastIndex = -1;
 	
 	private class BasicBlock {	
@@ -29,17 +28,16 @@ public class CodeGenerator {
 	public CodeGenerator(Model model, String fileName) {
 		this.model = model;
 		this.inputFileName = fileName;
-		this.assemblyCodes = new ArrayList<String>();
-		this.rt = new RegisterTable(model, assemblyCodes);
+		this.rt = new RegisterTable(model);
 	}
 	
 	public void genCode() {
 		generateCode();
-		lastIndex = assemblyCodes.size() * 4;
-		assemblyCodes = new ArrayList<String>();
+		lastIndex = model.getAssemblyCodes().size() * 4;
+		model.setAssemblyCodes(new ArrayList<String>());
 		generateCode();
 		int i = 0;
-		for (String line: assemblyCodes) {
+		for (String line: model.getAssemblyCodes()) {
 			System.out.println(i * 4 + ": " + line);
 			i++;
 		}
@@ -56,9 +54,9 @@ public class CodeGenerator {
 			List<ImmediateInstruction> instructionList = model.getImmediateInstructionList();
 			performLiveVariableAnalysis(start, end);
 			for (int i = start; i <= end; i++) {
-				instructionList.get(i).setStartAddr(assemblyCodes.size() * 4);
+				instructionList.get(i).setStartAddr(model.getAssemblyCodes().size() * 4);
 				generateCode(instructionList.get(i));
-//				assemblyCodes.add(rt.toString());
+//				model.getAssemblyCodes().add(rt.toString());
 			}
 			updateLiveVariable();
 		}
@@ -137,7 +135,7 @@ public class CodeGenerator {
 			reg = rt.getReg(left, leftNextUse);
 			VariableSymbol symbol = (VariableSymbol) model.getSymbolTable().get(left);
 			if (symbol == null || !symbol.isTempVariable()) {
-				assemblyCodes.add(String.format("%s %s, D%d", "move.l", numberOrVariable(left), reg));
+				model.getAssemblyCodes().add(String.format("%s %s, D%d", "move.l", numberOrVariable(left), reg));
 			}
 			
 		} else {
@@ -179,9 +177,9 @@ public class CodeGenerator {
 		int leftReg = rt.where(left);
 		if (!rt.isInReg(left, reg)) {
 			if (leftReg >= 0) {
-				assemblyCodes.add(String.format("%s D%d, D%d", "move.l", leftReg, reg));
+				model.getAssemblyCodes().add(String.format("%s D%d, D%d", "move.l", leftReg, reg));
 			} else {
-				assemblyCodes.add(String.format("%s %s, D%d", "move.l", numberOrVariable(left), reg));
+				model.getAssemblyCodes().add(String.format("%s %s, D%d", "move.l", numberOrVariable(left), reg));
 			}
 		}
 		
@@ -203,16 +201,16 @@ public class CodeGenerator {
 		}
 		
 		if (operator.equals("!")) {
-			assemblyCodes.add(String.format("%s %s", "not", rightPart));
+			model.getAssemblyCodes().add(String.format("%s %s", "not", rightPart));
 		} else if (operator.equals("neg")) {
-			assemblyCodes.add(String.format("%s %s", "neg", rightPart));
+			model.getAssemblyCodes().add(String.format("%s %s", "neg", rightPart));
 		} else {
-			assemblyCodes.add(String.format("%s %s, %s", transformOperation(operator), 
+			model.getAssemblyCodes().add(String.format("%s %s, %s", transformOperation(operator), 
 					numberOrVariable(leftPart), rightPart));
 			if (operator.equals("/")) {
-				assemblyCodes.add(String.format("%s %s, %s", "and", "#$00FF", rightPart));
+				model.getAssemblyCodes().add(String.format("%s %s, %s", "and", "#$00FF", rightPart));
 			} else if (operator.equals("%")) {
-				assemblyCodes.add(String.format("%s %s, %s", "slr", "#16", rightPart));
+				model.getAssemblyCodes().add(String.format("%s %s, %s", "slr", "#16", rightPart));
 			}
 		}
 		
@@ -262,25 +260,25 @@ public class CodeGenerator {
 		int leftReg = rt.where(left);
 		if (!rt.isInReg(left, reg)) {
 			if (leftReg >= 0) {
-				assemblyCodes.add(String.format("%s D%d, D%d", "move.l", leftReg, reg));
+				model.getAssemblyCodes().add(String.format("%s D%d, D%d", "move.l", leftReg, reg));
 			} else {
-				assemblyCodes.add(String.format("%s %s, D%d", "move.l", numberOrVariable(left), reg));
+				model.getAssemblyCodes().add(String.format("%s %s, D%d", "move.l", numberOrVariable(left), reg));
 			}
 		}
 		
 		// if 'right' is in a reg(r) ...
 		int rightReg = rt.where(right);
 		if (rightReg >= 0) {
-			assemblyCodes.add(String.format("%s D%d, D%d", "cmp.l", rightReg, reg));
+			model.getAssemblyCodes().add(String.format("%s D%d, D%d", "cmp.l", rightReg, reg));
 		} else {
-			assemblyCodes.add(String.format("%s %s, D%d", "cmp.l", numberOrVariable(right), reg));
+			model.getAssemblyCodes().add(String.format("%s %s, D%d", "cmp.l", numberOrVariable(right), reg));
 		}
 		
 		// generate ...
-		assemblyCodes.add(String.format("b%s #%d", transformOperation(operator), (assemblyCodes.size() + 3) * 4));
-		assemblyCodes.add(String.format("%s D%d", "clr.l", reg));
-		assemblyCodes.add(String.format("%s #%d", "bra", (assemblyCodes.size() + 2) * 4));
-		assemblyCodes.add(String.format("%s #1, D%d", "move.l", reg));
+		model.getAssemblyCodes().add(String.format("b%s #%d", transformOperation(operator), (model.getAssemblyCodes().size() + 3) * 4));
+		model.getAssemblyCodes().add(String.format("%s D%d", "clr.l", reg));
+		model.getAssemblyCodes().add(String.format("%s #%d", "bra", (model.getAssemblyCodes().size() + 2) * 4));
+		model.getAssemblyCodes().add(String.format("%s #1, D%d", "move.l", reg));
 		
 		// if ('left' is not live) and ('left' is in a reg)
 		if (leftNextUse < 0 && leftReg >= 0) {
@@ -305,7 +303,7 @@ public class CodeGenerator {
 		updateLiveVariable();
 		
 		int nextInstruction = Integer.parseInt(result);
-		assemblyCodes.add(String.format("%s #%d", "bra", 
+		model.getAssemblyCodes().add(String.format("%s #%d", "bra", 
 				model.getImmediateInstructionList().get(nextInstruction).getStartAddr()));
 	}
 
@@ -319,7 +317,7 @@ public class CodeGenerator {
 		int reg = -1;
 		if (leftReg < 0) {
 			reg = rt.getReg(left, leftNextUse);
-			assemblyCodes.add(String.format("%s %s, D%d", "move.l", left, reg));
+			model.getAssemblyCodes().add(String.format("%s %s, D%d", "move.l", left, reg));
 		} else {
 			reg = model.getSymbolTable().get(left).getMemLoc();
 		}
@@ -328,9 +326,9 @@ public class CodeGenerator {
 		updateLiveVariable();
 		
 		// generate ...
-		assemblyCodes.add(String.format("%s D%d", "tst", reg));
+		model.getAssemblyCodes().add(String.format("%s D%d", "tst", reg));
 		int nextInstruction = Integer.parseInt(result);
-		assemblyCodes.add(String.format("%s #%d", "beq", 
+		model.getAssemblyCodes().add(String.format("%s #%d", "beq", 
 				model.getImmediateInstructionList().get(nextInstruction).getStartAddr()));
 		
 	}
@@ -341,7 +339,7 @@ public class CodeGenerator {
 		for (int i = 0; i < regList.length; i++) {
 			for (String name: regList[i]) {
 				if (!model.getSymbolTable().get(name).isTempVariable()) {
-					assemblyCodes.add(String.format("%s D%d, %s", "move.l", i, name));
+					model.getAssemblyCodes().add(String.format("%s D%d, %s", "move.l", i, name));
 				}
 			}
 			regList[i] = new HashSet<String>();

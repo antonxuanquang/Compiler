@@ -11,6 +11,7 @@ public class Model {
 	private Stack<Integer> instructionCounterStack;
 	private Stack<Symbol> symbolStack;
 	private Stack<Integer> whileStack;
+	private List<String> assemblyCodes;
 	
 	public Model() {
 		symbolTable = new HashMap<String, VariableSymbol>();
@@ -18,6 +19,7 @@ public class Model {
 		instructionCounterStack = new Stack<Integer>();
 		symbolStack = new Stack<Symbol>();
 		whileStack = new Stack<Integer>();
+		assemblyCodes = new ArrayList<String>();
 	}
 	
 	public int getNextImmediateInstructionCounter() {
@@ -42,6 +44,14 @@ public class Model {
 	
 	public Stack<Integer> getWhileStack() {
 		return whileStack;
+	}
+	
+	public List<String> getAssemblyCodes() {
+		return assemblyCodes;
+	}
+	
+	public void setAssemblyCodes(List<String> assemblyCodes) {
+		this.assemblyCodes = assemblyCodes;
 	}
 	
 	public void generateImmediateInstruction(
